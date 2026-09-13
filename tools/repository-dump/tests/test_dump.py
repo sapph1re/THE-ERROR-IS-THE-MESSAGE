@@ -26,9 +26,10 @@ class Tests(unittest.TestCase):
             self.assertIn('&per_page=100&page=2', api.call_args.args[0])
 
     def test_uploaded_markdown_and_html(self):
-        u = 'https://github.com/user-attachments/assets/abc'
+        u = 'https://github.com/user-attachments/assets/8210eda6-f708-448a-8ca3-515bc00d1edc'
         self.assertEqual(dump.attachment_urls({'body': f'![image]({u}) <img src="{u}">'}), {u})
         self.assertEqual(dump.attachment_urls('https://evil.test/f https://github.com/a/b'), set())
+        self.assertEqual(dump.attachment_urls('https://github.com/user-attachments/assets/xxxx`'), set())
 
     def test_redirect_strips_auth(self):
         req = Request('https://api.github.com/repos/a/b/releases/assets/1', headers={'Authorization': 'Bearer sentinel'})

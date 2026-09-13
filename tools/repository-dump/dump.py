@@ -7,6 +7,8 @@ import os
 from pathlib import Path
 import re
 import time
+import threading
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 from urllib.error import HTTPError
 from urllib.parse import urlparse
@@ -49,9 +51,11 @@ def attachment_urls(value):
             found.update(attachment_urls(v))
     elif isinstance(value, str):
         for u in URL_RE.findall(value):
-            u = u.rstrip('.,;:!?)]}')
+            u = u.rstrip('.,;:!?)]}`')
             p = urlparse(u)
-            if ((p.hostname == 'github.com' and p.path.startswith('/user-attachments/'))
+            asset_path = re.fullmatch(r'/user-attachments/assets/[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}', p.path)
+            file_path = re.match(r'^/user-attachments/files/[0-9]+/', p.path)
+            if ((p.hostname == 'github.com' and (asset_path or file_path))
                     or p.hostname == 'user-images.githubusercontent.com'):
                 found.add(u)
     return found
@@ -63,6 +67,7 @@ class Exporter:
             raise ValueError('Expected owner/repository')
         self.repo, self.out, self.token = repo, Path(out), token
         self.max_bytes, self.bytes = max_bytes, 0
+        self.byte_lock = threading.Lock()
         self.opener = build_opener(SafeRedirect())
         self.urls, self.assets, self.failures, self.counts = set(), [], [], {}
 
@@ -155,8 +160,9 @@ class Exporter:
         self.counts = {'issues': sum('pull_request' not in i for i in issues),
                        'pull_requests': sum('pull_request' in i for i in issues),
                        'releases': len(releases)}
-        for u in sorted(self.urls):
-            self.download(u)
+        with ThreadPoolExecutor(max_workers=4) as pool:
+            list(pool.map(self.download, sorted(self.urls)))
+        self.assets.sort(key=lambda a: a['source_url'])
 
     def download(self, url, binary=False, expected_size=None, label=None):
         key = hashlib.sha256(url.encode()).hexdigest()
@@ -174,11 +180,12 @@ class Exporter:
                     block = response.read(min(CHUNK, self.max_bytes - self.bytes + 1))
                     if not block:
                         break
-                    if self.bytes + len(block) > self.max_bytes:
-                        raise ValueError('Total download limit exceeded')
+                    with self.byte_lock:
+                        if self.bytes + len(block) > self.max_bytes:
+                            raise ValueError('Total download limit exceeded')
+                        self.bytes += len(block)
                     file = directory / f"part-{len(record['parts']):04d}"
                     file.write_bytes(block)
-                    self.bytes += len(block)
                     record['bytes'] += len(block)
                     digest.update(block)
                     record['parts'].append({'path': str(file.relative_to(self.out)),

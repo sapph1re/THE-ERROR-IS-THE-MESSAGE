@@ -4,7 +4,7 @@ Exports the GitHub API history for a repository and downloads its uploaded attac
 
 ## Mobile operation
 
-Install `dump.py` and `restore.py` at `tools/repository-dump/` and the supplied workflow at `.github/workflows/repository-dump.yml` on the default branch. In a mobile web browser, open the repository's **Actions**, choose **Save repository history**, then **Run workflow**. Use the default branch. No local computer or personal token is needed for the workflow.
+Install `dump.py`, `restore.py`, and `publish.py` at `tools/repository-dump/` and the supplied workflow at `.github/workflows/repository-dump.yml` on the default branch. In a mobile web browser, open the repository's **Actions**, choose **Save repository history**, then **Run workflow**. Use the default branch. No local computer or personal token is needed for the workflow.
 
 The workflow writes `archive/` on the dedicated `repository-archive` branch, leaving the default branch untouched. Older snapshots remain in that branch's Git history. Branch rules must permit the workflow token to push there. GitHub Actions availability and usage limits apply; this tool does not purchase runner time or storage.
 
@@ -29,6 +29,8 @@ An optional `GH_TOKEN` or `GITHUB_TOKEN` gives access to the repository within t
 - Raw JSON records, a navigable Markdown index, source URL mappings, SHA-256 checksums and explicit failures.
 
 Assets are split into 40 MiB parts to stay below GitHub's single-file limit. `restore.py` reassembles them and verifies both part and full-file checksums. The manifest retains original release filenames when available, content type, original URL and byte size. Uploaded media without a filename uses a stable URL-derived identifier.
+
+Publication uses batches of at most 256 MiB of archive files per push. It first commits an incomplete publication marker and writes the final manifest only after all batches have been pushed. Interrupted uploads cannot leave a new snapshot marked complete.
 
 ## Completeness and limits
 
