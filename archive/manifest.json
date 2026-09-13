@@ -1,1 +1,14 @@
-{"complete": false, "publishing": true, "repository": "attogram/THE-ERROR-IS-THE-MESSAGE"}
+{
+  "repository": "attogram/THE-ERROR-IS-THE-MESSAGE",
+  "started_at": "2026-09-13T09:55:50.456318+00:00",
+  "finished_at": "2026-09-13T09:58:55.278389+00:00",
+  "complete": true,
+  "counts": {
+    "issues": 60,
+    "pull_requests": 7,
+    "releases": 4
+  },
+  "downloaded_bytes": 1895824852,
+  "failures": [],
+  "scope": "Issues, PRs and review comments, releases, tags, GitHub-hosted uploaded attachments. Not a Git mirror or deleted content recovery."
+}
