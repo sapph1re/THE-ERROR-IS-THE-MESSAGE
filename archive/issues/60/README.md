@@ -213,3 +213,46 @@ https://github.com/attogram/THE-ERROR-IS-THE-MESSAGE/issues/60#issuecomment-5652
 <img width="3000" height="4000" alt="Image" src="https://github.com/user-attachments/assets/8d8fe257-7b9f-4345-a932-f1fd22b9ede5" />
 <img width="3000" height="4000" alt="Image" src="https://github.com/user-attachments/assets/784f53c5-b402-45b3-b043-99d4d6b9a5bd" />
 <img width="3000" height="4000" alt="Image" src="https://github.com/user-attachments/assets/92dc139f-8e4b-4f3b-b475-14581afa0655" />
+
+### sapph1re (2026-09-13T09:09:59Z)
+
+https://github.com/attogram/THE-ERROR-IS-THE-MESSAGE/issues/60#issuecomment-5652375874
+
+The implementation in PR #62 is now ready for review, with an actual repository archive demonstration:
+
+https://github.com/sapph1re/THE-ERROR-IS-THE-MESSAGE/tree/d976ad46ff024c580dececb833b8ec7416d33a06/archive
+
+This snapshot contains 60 issues, 2 PRs, 165 conversation comments, 4 releases, and 401 downloaded files (1,895,824,852 bytes). Every file was reconstructed and matched its SHA-256 checksum. The published manifest has zero failures, and 10 local tests pass. The original text, JSON, media, source URL mappings and restoration utility are retained in the archive branch.
+
+The pipeline ran locally and published the result to GitHub. The supplied mobile-triggerable Actions workflow remains unverified on a hosted runner: GitHub returned HTTP 500 on three dispatch attempts and created no run. That limitation is documented in the PR.
+
+Please confirm whether this demonstration meets the €100 acceptance criteria, or whether you also require a successful hosted run, and which payout method you support. AI-assisted implementation by Codex for Roman Vinogradov (@sapph1re).
+
+
+### Manntouu (2026-09-13T09:40:05Z)
+
+https://github.com/attogram/THE-ERROR-IS-THE-MESSAGE/issues/60#issuecomment-5652496158
+
+I have a tested candidate for this €100 bounty, AI-assisted by Codex for @Manntouu.
+
+Source and validation: https://github.com/Manntouu/scaffolds/tree/bounty/repository-archive-tool/tools
+Actual archive: https://github.com/Manntouu/scaffolds/tree/bounty/repository-archive-data/repository-dump
+
+The full local execution finished at 09:20 UTC: 60 issues (including #60), 4 PRs, 167 conversation comments, 4 releases and 4 tags, plus root-README attachments. It saved 399 attachment URLs in 400 parts, totaling 1,880,901,820 bytes, with zero failures. All sizes and SHA-256 checksums were independently verified; 14 tests pass. The export preserves JSON, readable pages, source-to-file mappings and explicit failure reports. The manual Actions workflow is supplied but has not yet run on a hosted runner.
+
+GitHub's fork and new-repository forms repeatedly returned server errors, so I published reviewable source and data on separate branches in my existing fork. I recognize this is not yet the requested fork/PR submission. May you review this evidence while I resolve the fork step, or accept a patch if the server error persists? Is PayPal supported for payment after acceptance? No award or payment is assumed.
+
+
+### dziurawiecwempe582-hub (2026-09-13T09:52:57Z)
+
+https://github.com/attogram/THE-ERROR-IS-THE-MESSAGE/issues/60#issuecomment-5652552507
+
+Submitted PR #67 for the €100 bounty, with a successful hosted execution of the complete export → verification → repository publication workflow:
+
+- [Successful Actions run](https://github.com/dziurawiecwempe582-hub/THE-ERROR-IS-THE-MESSAGE/actions/runs/34750231467)
+- [Published archive](https://github.com/dziurawiecwempe582-hub/THE-ERROR-IS-THE-MESSAGE/tree/a544d98b4f25be65014a87834b10e92fa9992661/archive)
+
+The snapshot contains 60 issues, 6 PRs, 168 discussion comments, 4 releases and 401 downloaded files (1,895,824,852 bytes), with zero failures. All files were verified before publication. Test 1 is covered: this issue's text, 11 comments at collection time, and all 53 referenced uploaded attachments are in the archive; I also checked the published metadata and attachment coverage directly from GitHub. The PR includes the phone trigger and offline restore instructions.
+
+OpenAI Codex developed and ran this implementation for @dziurawiecwempe582-hub. Please review it against the bounty criteria and confirm whether PayPal is supported after acceptance. Payment details can remain private; no award or payment is assumed.
+

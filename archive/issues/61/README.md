@@ -26,6 +26,14 @@ The workflow can be started from GitHub's web or mobile Actions UI and commits t
 
 ## Conversation
 
+### iliasaberkane6-lab (2026-09-13T08:58:57Z)
+
+https://github.com/attogram/THE-ERROR-IS-THE-MESSAGE/pull/61#issuecomment-5652335796
+
+Follow-up commit `dc32aea` hardens attachment handling: API tokens are never sent to signed CDN URLs, malformed URL-like text is ignored, and tokens are redacted from errors.
+
+Validation: 4/4 local tests pass; a real 10.6 MB GitHub-hosted attachment downloaded successfully. The workflow remains dependency-free and mobile-triggerable.
+
 ## Reviews
 
 ## Inline review comments
