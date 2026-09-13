@@ -70,3 +70,8 @@ This is a non-atomic snapshot. Rerun after activity has stopped for a stable arc
 - #60 [BOUNTY: 100 EURO: REPO DUMP TOOL](issues/60/README.md) (open)
 - #61 [feat: add mobile-friendly repository dump workflow](issues/61/README.md) (open)
 - #62 [Archive repository conversations and media with checksummed recovery](issues/62/README.md) (open)
+- #63 [feat: add mobile repository history archive workflow](issues/63/README.md) (open)
+- #64 [Repo dump tool: mobile-triggered Actions workflow + stdlib Python exporter (#60)](issues/64/README.md) (open)
+- #65 [Archive repository conversations and media with verifiable recovery](issues/65/README.md) (open)
+- #66 [Add a resumable repository archive with checksummed media and manual Actions](issues/66/README.md) (open)
+- #67 [Archive repository from mobile with verified attachments and hosted demonstration](issues/67/README.md) (open)
