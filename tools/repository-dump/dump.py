@@ -27,7 +27,7 @@ def allowed(url):
     p = urlparse(url)
     return (p.scheme == 'https' and p.port in (None, 443)
             and not p.username and not p.password
-            and (p.hostname in {'github.com', 'api.github.com'} | GITHUB_S3
+            and (p.hostname in {'github.com', 'api.github.com', 'codeload.github.com'} | GITHUB_S3
                  or (p.hostname or '').endswith('.githubusercontent.com')))
 
 
@@ -168,7 +168,7 @@ class Exporter:
         key = hashlib.sha256(url.encode()).hexdigest()
         directory = self.out / 'assets' / key
         directory.mkdir(parents=True, exist_ok=True)
-        record = {'source_url': url, 'name': label, 'parts': [], 'bytes': 0}
+        record = {'source_url': url, 'name': label, 'expected_bytes': expected_size, 'parts': [], 'bytes': 0}
         digest = hashlib.sha256()
         try:
             with self.request(url, binary=binary) as response:

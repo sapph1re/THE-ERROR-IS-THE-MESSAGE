@@ -10,6 +10,7 @@ from urllib.request import Request
 
 import dump
 from restore import restore, asset_name
+from retry_assets import retry
 
 
 class Response(io.BytesIO):
@@ -19,6 +20,18 @@ class Response(io.BytesIO):
 
 
 class Tests(unittest.TestCase):
+    def test_retry_recovers_assets_but_rejects_incomplete_metadata(self):
+        with tempfile.TemporaryDirectory() as root:
+            p = Path(root)
+            (p / 'manifest.json').write_text(json.dumps({'repository':'a/b','complete':False,'failures':[{'source_url':'https://github.com/user-attachments/assets/1234'}]}))
+            (p / 'assets-manifest.json').write_text(json.dumps([{'source_url':'https://github.com/user-attachments/assets/1234','status':'failed','bytes':0,'parts':[]}]))
+            with patch.object(dump.Exporter, 'request', return_value=Response(b'actual bytes')), contextlib.redirect_stdout(io.StringIO()):
+                self.assertEqual(retry(p), 0)
+            self.assertTrue(json.loads((p / 'manifest.json').read_text())['complete'])
+            (p / 'manifest.json').write_text(json.dumps({'repository':'a/b','failures':[{'stage':'metadata'}]}))
+            with self.assertRaises(ValueError):
+                retry(p)
+
     def test_restored_media_has_extension_and_safe_filename(self):
         video = {'source_url': 'https://github.com/user-attachments/assets/1234', 'content_type': 'video/mp4'}
         self.assertTrue(asset_name(video).endswith('.mp4'))
@@ -42,6 +55,7 @@ class Tests(unittest.TestCase):
         nxt = dump.SafeRedirect().redirect_request(req, None, 302, '', {}, 'https://objects.githubusercontent.com/file')
         self.assertFalse(nxt.has_header('Authorization'))
         self.assertTrue(dump.allowed('https://github-production-user-asset-6210df.s3.amazonaws.com/file'))
+        self.assertTrue(dump.allowed('https://codeload.github.com/a/b/legacy.tar.gz/main'))
         self.assertFalse(dump.allowed('https://attacker.s3.amazonaws.com/file'))
         with self.assertRaises(ValueError):
             dump.SafeRedirect().redirect_request(req, None, 302, '', {}, 'http://127.0.0.1/private')

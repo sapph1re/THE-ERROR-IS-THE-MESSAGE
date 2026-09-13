@@ -15,6 +15,7 @@ The optional source-repository input can name another public repository for a de
 ```sh
 python3 dump.py OWNER/REPO --output archive --max-download-mib 2048
 python3 restore.py archive restored-assets
+python3 retry_assets.py archive --max-download-mib 8192
 python3 -m unittest discover -s tests -v
 ```
 
@@ -35,6 +36,8 @@ Publication uses batches of at most 256 MiB of archive files per push. It first 
 ## Completeness and limits
 
 Exit code 0 means all requests and downloads in the documented scope completed. Any failed request or download produces an **INCOMPLETE** manifest and exit code 1. The workflow saves that partial result for inspection and remains visibly failed. A download cap does not silently truncate a successful archive. Raise the cap and rerun into a fresh output folder when appropriate.
+
+If metadata succeeded but individual attachments failed, `retry_assets.py` retries only those downloads and records a separate retry timestamp. It preserves the original snapshot timestamp and refuses to relabel incomplete metadata as complete. Successful assets are not downloaded again.
 
 This is an API snapshot, not a Git mirror. Clone/mirror the repository separately for every source commit and Git object. Deleted content, content unavailable to the token, external websites, GitHub Discussions, Actions artifacts/logs, wiki history, LFS objects, and files that never finished uploading are outside this export's scope. PR commit metadata is subject to GitHub's endpoint limit. It is not a point-in-time transaction: changes during a run may require another export after activity stops. Public attachments are supported; private attachment URLs that require interactive browser authentication are reported as inaccessible rather than bypassed.
 
