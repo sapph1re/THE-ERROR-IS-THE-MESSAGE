@@ -1,0 +1,60 @@
+name: Save repository history
+on:
+  workflow_dispatch:
+    inputs:
+      source_repository:
+        description: Optional owner/repository to archive (blank means this repository)
+        required: false
+        default: ''
+      max_download_mib:
+        description: Maximum attachment download size in MiB (incomplete runs are flagged)
+        required: true
+        default: '2048'
+permissions:
+  contents: write
+  issues: read
+  pull-requests: read
+concurrency:
+  group: repository-history-export
+  cancel-in-progress: false
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Export repository and uploaded files
+        id: export
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_REPO: ${{ inputs.source_repository || github.repository }}
+          LIMIT_MIB: ${{ inputs.max_download_mib }}
+        run: |
+          python3 tools/repository-dump/dump.py "$SOURCE_REPO" --output "$RUNNER_TEMP/repository-dump" --max-download-mib "$LIMIT_MIB"
+      - name: Save snapshot on repository-archive branch
+        if: always() && steps.export.outcome != 'skipped'
+        run: |
+          test -f "$RUNNER_TEMP/repository-dump/manifest.json"
+          cp tools/repository-dump/restore.py "$RUNNER_TEMP/repository-dump/restore.py"
+          if git ls-remote --exit-code --heads origin repository-archive >/dev/null; then
+            git fetch origin repository-archive --depth=1
+            git checkout -B repository-archive FETCH_HEAD
+          else
+            git checkout -B repository-archive
+          fi
+          test ! -L archive
+          mkdir -p archive
+          rsync -a --delete "$RUNNER_TEMP/repository-dump/" archive/
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add archive
+          if ! git diff --cached --quiet; then
+            git commit -m "Save repository history snapshot"
+            git push origin HEAD:repository-archive
+          fi
+      - name: Mark incomplete export as failed
+        if: steps.export.outcome == 'failure'
+        run: |
+          echo 'Incomplete export saved for inspection. Read archive/manifest.json on repository-archive.'
+          exit 1

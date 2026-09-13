@@ -1,0 +1,17 @@
+[
+  {
+    "source_url": "https://github.com/user-attachments/assets/8210eda6-f708-448a-8ca3-515bc00d1edc",
+    "name": null,
+    "parts": [
+      {
+        "path": "assets/ce3b18fdde9c28dc429b62fc9318992d721943a05cb29c2ef017a92114c587f9/part-0000",
+        "bytes": 10577236,
+        "sha256": "3603995f540a22b1ebdcdc928a54b5bfa1a3048499aa644a6157a265bbc611a4"
+      }
+    ],
+    "bytes": 10577236,
+    "content_type": "video/mp4",
+    "status": "complete",
+    "sha256": "3603995f540a22b1ebdcdc928a54b5bfa1a3048499aa644a6157a265bbc611a4"
+  }
+]
