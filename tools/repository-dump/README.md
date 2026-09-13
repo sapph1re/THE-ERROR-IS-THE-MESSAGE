@@ -31,6 +31,8 @@ An optional `GH_TOKEN` or `GITHUB_TOKEN` gives access to the repository within t
 
 Assets are split into 40 MiB parts to stay below GitHub's single-file limit. `restore.py` reassembles them and verifies both part and full-file checksums. The manifest retains original release filenames when available, content type, original URL and byte size. Uploaded media without a filename uses a stable URL-derived identifier.
 
+Restoration publishes each file only after checksum verification. If a part is corrupt, repair it and rerun the same command: already restored files are checked and skipped, failed temporary files are removed, and existing files with different contents are never overwritten. The output filesystem must support hard links for atomic, no-overwrite publication (for example, APFS or ext4).
+
 Publication uses batches of at most 256 MiB of archive files per push. It first commits an incomplete publication marker and writes the final manifest only after all batches have been pushed. Interrupted uploads cannot leave a new snapshot marked complete.
 
 ## Completeness and limits

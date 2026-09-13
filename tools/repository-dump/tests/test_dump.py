@@ -86,6 +86,29 @@ class Tests(unittest.TestCase):
             self.assertEqual(e.assets[0]['status'], 'failed')
             self.assertEqual(e.bytes, 0)
 
+    def test_restore_retry_after_corrupt_second_asset(self):
+        with tempfile.TemporaryDirectory() as root:
+            out, restored = Path(root) / 'archive', Path(root) / 'restored'
+            e = dump.Exporter('a/b', out)
+            for suffix, data in [('abc', b'first'), ('def', b'second')]:
+                with patch.object(e, 'request', return_value=Response(data)):
+                    e.download('https://github.com/user-attachments/assets/' + suffix)
+            e.save('assets-manifest.json', e.assets)
+            broken = out / e.assets[1]['parts'][0]['path']
+            broken.write_bytes(b'broken')
+            with self.assertRaises(ValueError):
+                restore(out, restored)
+            self.assertEqual(len(list(restored.iterdir())), 1)
+            broken.write_bytes(b'second')
+            with contextlib.redirect_stdout(io.StringIO()):
+                restore(out, restored)
+            self.assertEqual(sorted(p.read_bytes() for p in restored.iterdir()), [b'first', b'second'])
+            first = restored / asset_name(e.assets[0])
+            first.write_bytes(b'user edit')
+            with self.assertRaises(FileExistsError):
+                restore(out, restored)
+            self.assertEqual(first.read_bytes(), b'user edit')
+
     def test_metadata_failure_is_nonzero_and_manifest_survives(self):
         with tempfile.TemporaryDirectory() as root:
             e = dump.Exporter('a/b', Path(root) / 'archive')
