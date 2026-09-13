@@ -3,7 +3,22 @@
 import argparse
 import hashlib
 import json
+import mimetypes
+import re
 from pathlib import Path
+from urllib.parse import urlparse, unquote
+
+
+def asset_name(item):
+    key = hashlib.sha256(item['source_url'].encode()).hexdigest()
+    candidate = item.get('name') or Path(unquote(urlparse(item['source_url']).path)).name
+    candidate = re.sub(r'[^A-Za-z0-9._ -]', '_', candidate).strip('. ')[:150]
+    if not candidate:
+        candidate = key
+    if not Path(candidate).suffix:
+        kind = (item.get('content_type') or '').split(';')[0].strip()
+        candidate += mimetypes.guess_extension(kind) or '.bin'
+    return key[:16] + '-' + candidate
 
 
 def restore(archive, output):
@@ -13,8 +28,7 @@ def restore(archive, output):
         if item['status'] != 'complete':
             raise ValueError('Archive has failed assets; inspect manifest before restoring')
         key = hashlib.sha256(item['source_url'].encode()).hexdigest()
-        name = Path(item.get('name') or key).name
-        dest = output / (key[:16] + '-' + name)
+        dest = output / asset_name(item)
         digest, total = hashlib.sha256(), 0
         with dest.open('xb') as target:
             for part in item['parts']:

@@ -9,7 +9,7 @@ from unittest.mock import patch
 from urllib.request import Request
 
 import dump
-from restore import restore
+from restore import restore, asset_name
 
 
 class Response(io.BytesIO):
@@ -19,6 +19,12 @@ class Response(io.BytesIO):
 
 
 class Tests(unittest.TestCase):
+    def test_restored_media_has_extension_and_safe_filename(self):
+        video = {'source_url': 'https://github.com/user-attachments/assets/1234', 'content_type': 'video/mp4'}
+        self.assertTrue(asset_name(video).endswith('.mp4'))
+        video['name'] = '../../escape.mp4'
+        self.assertNotIn('/', asset_name(video))
+
     def test_pagination_over_one_hundred(self):
         e = dump.Exporter('a/b', '/unused')
         with patch.object(e, 'api', side_effect=[list(range(100)), [100]]) as api:
