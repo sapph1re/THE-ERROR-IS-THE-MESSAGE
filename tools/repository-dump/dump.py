@@ -55,8 +55,11 @@ def attachment_urls(value):
             p = urlparse(u)
             asset_path = re.fullmatch(r'/user-attachments/assets/[0-9a-fA-F]{8}(?:-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}', p.path)
             file_path = re.match(r'^/user-attachments/files/[0-9]+/', p.path)
-            if ((p.hostname == 'github.com' and (asset_path or file_path))
-                    or p.hostname == 'user-images.githubusercontent.com'):
+            legacy_path = re.match(r'^/[^/]+/[^/]+/(?:assets/[0-9]+/[0-9a-fA-F-]{36}|files/[0-9]+/)', p.path)
+            if ((p.hostname == 'github.com' and (asset_path or file_path or legacy_path))
+                    or p.hostname in ('user-images.githubusercontent.com',
+                                      'private-user-images.githubusercontent.com',
+                                      'secured-user-images.githubusercontent.com')):
                 found.add(u)
     return found
 
